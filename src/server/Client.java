@@ -13,4 +13,15 @@ public class Client {
 		answers = new ArrayList<>();
 	}
 
+	// getters and setters
+	public int getId() {
+		return id;
+	}
+
+	public ArrayList<Integer> getAnswers() {
+		return answers;
+	}
+	
+	
+
 }

@@ -25,18 +25,32 @@ public class Server {
 				Socket clientSocket = serverSocket.accept();
 				System.out.println("client connected.");
 				
-				//variable que guarda
-				//el id del cliente conectado
-				int client = -1;
+				/**
+				 * variable que controla
+				 * si hay una posición libre
+				 */
+				boolean isEmpty = false;
 				
 				int counter = 0;
-				while(client == -1) {
+				while(!isEmpty && counter < clients.length) {
 					if(clients[counter] == null) {
-						client = counter;
+						isEmpty = true;
 						clients[counter] = new Client(counter);
 					}
+					else 
+						counter++;
 				}
 				
+				if (isEmpty) {
+					Service service = new Service(clientSocket, clients[counter]);
+					service.start();
+				}
+					
+				else {
+					System.err.println("exceeded client limit.");
+					clientSocket.close();
+				}
+					
 				
 				
 			}
