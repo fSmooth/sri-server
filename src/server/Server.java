@@ -8,8 +8,12 @@ public class Server {
 	
 	// puerto del servidor
 	private final static int PORT = 8889;
+	// array que guarda las respuestas de los clientes
+	private static Client[] clients = {null, null, null, null};
 	
-	// ejecución del servidor
+	/*
+	 *  ejecución del servidor
+	 */
 	public static void execute() {
 
 		// Socket para la comunicación del servidor
@@ -20,6 +24,35 @@ public class Server {
 			while(true) {
 				Socket clientSocket = serverSocket.accept();
 				System.out.println("client connected.");
+				
+				/**
+				 * variable que controla
+				 * si hay una posición libre
+				 */
+				boolean isEmpty = false;
+				
+				int counter = 0;
+				while(!isEmpty && counter < clients.length) {
+					if(clients[counter] == null) {
+						isEmpty = true;
+						clients[counter] = new Client(counter);
+					}
+					else 
+						counter++;
+				}
+				
+				if (isEmpty) {
+					Service service = new Service(clientSocket, clients[counter]);
+					service.start();
+				}
+					
+				else {
+					System.err.println("exceeded client limit.");
+					clientSocket.close();
+				}
+					
+				
+				
 			}
 			
 			
