@@ -13,6 +13,8 @@ public class Service extends Thread {
 	private int idClient;
 	private Scanner in;
 	private PrintWriter out;
+	private int questionCounter;
+	private boolean isFinished;
 
 	/**
 	 * Constructor
@@ -25,6 +27,8 @@ public class Service extends Thread {
 	public Service(Socket clientSocket, int idClient) {
 		this.clientSocket = clientSocket;
 		this.idClient = idClient;
+		this.questionCounter = 0;
+		this.isFinished = false;
 	}
 
 	@Override
@@ -45,12 +49,23 @@ public class Service extends Thread {
 					break;
 				case "QUESTION": // devuelve la pregunta con sus posibles
 									// respuestas
-					out.println("¿Cuál fue el ganador de la última RWC?");
-					out.println("======================================");
-					out.println("1. Australia");
-					out.println("2. Inglaterra");
-					out.println("3. Nueva Zelanda");
-					out.println("4. Argentina");
+					if (questionCounter < Server.getQuestions().size()) {
+						out.println(Server.getQuestions().get(questionCounter)[0]);
+						out.println("=============================");
+						out.println(Server.getQuestions().get(questionCounter)[1]);
+						out.println(Server.getQuestions().get(questionCounter)[2]);
+						out.println(Server.getQuestions().get(questionCounter)[3]);
+						out.println(Server.getQuestions().get(questionCounter)[4]);
+
+					} else {
+						out.println("no questions left.");
+						isFinished = true;
+					}
+
+					break;
+				case "RESTART": // vuelve a comenzar las preguntas
+					questionCounter = 0;
+					isFinished = false;
 					break;
 
 				default:
@@ -58,10 +73,16 @@ public class Service extends Thread {
 					String[] splitCommand = command.split(" ");
 
 					if (splitCommand[0].equals("ANSWER") && StringUtils.isNumeric(splitCommand[1])) {
-						if (Server.setAnswer(idClient, Integer.valueOf(splitCommand[1])))
+						if (isFinished) // no se pueden responder a más
+										// preguntas
+							out.println("finished.");
+						else if (Server.setAnswer(idClient, Integer.valueOf(splitCommand[1]), questionCounter)) {
+							questionCounter++;
 							out.println("added answer");
+						}
+
 						else
-							out.println("answer not added");
+							out.println("answer not added: You must respond in order");
 
 					} else
 						out.println("Unknown command.");
