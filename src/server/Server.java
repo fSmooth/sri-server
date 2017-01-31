@@ -85,4 +85,10 @@ public class Server {
 	public static ArrayList<String[]> getQuestions() {
 		return questions;
 	}
+
+	public static Client[] getClients() {
+		return clients;
+	}
+	
+	
 }
