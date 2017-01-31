@@ -38,7 +38,7 @@ public class Service extends Thread {
 			in = new Scanner(clientSocket.getInputStream());
 			out = new PrintWriter(clientSocket.getOutputStream());
 
-			// almacena el comando introducid
+			// almacena el comando introducido
 			String command = in.nextLine();
 
 			while (!command.equals("EXIT")) {
@@ -97,7 +97,8 @@ public class Service extends Thread {
 				}
 
 				out.flush();
-				command = in.nextLine();
+				if(in.hasNext())
+					command = in.nextLine();
 			}
 			
 			out.println("bye!");
