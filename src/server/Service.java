@@ -99,6 +99,9 @@ public class Service extends Thread {
 				out.flush();
 				command = in.nextLine();
 			}
+			
+			out.println("bye!");
+			out.flush();
 
 		} catch (IOException e) {
 			e.printStackTrace();
