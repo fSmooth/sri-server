@@ -21,6 +21,14 @@ public class Client {
 	public ArrayList<Integer> getAnswers() {
 		return answers;
 	}
+
+	
+	
+	// object
+	@Override
+	public String toString() {
+		return "Client [id=" + id + ", answers=" + answers + "]";
+	}
 	
 	
 

@@ -49,7 +49,7 @@ public class Service extends Thread {
 					break;
 				case "QUESTION": // devuelve la pregunta con sus posibles
 									// respuestas
-					if (questionCounter < Server.getQuestions().size()) {
+					if (!isFinished) {
 						out.println(Server.getQuestions().get(questionCounter)[0]);
 						out.println("=============================");
 						out.println(Server.getQuestions().get(questionCounter)[1]);
@@ -59,7 +59,6 @@ public class Service extends Thread {
 
 					} else {
 						out.println("no questions left.");
-						isFinished = true;
 					}
 
 					break;
@@ -68,22 +67,30 @@ public class Service extends Thread {
 					isFinished = false;
 					break;
 
+				case "STATISTICS": // muestra las respuestas de los clientes
+					statistics(out);
+					break;
+
 				default:
 					// respuesta a la pregunta
 					String[] splitCommand = command.split(" ");
 
 					if (splitCommand[0].equals("ANSWER") && StringUtils.isNumeric(splitCommand[1])) {
-						if (isFinished) // no se pueden responder a más
+						if (isFinished) // no se puede responder a más
 										// preguntas
 							out.println("finished.");
 						else if (Server.setAnswer(idClient, Integer.valueOf(splitCommand[1]), questionCounter)) {
 							questionCounter++;
 							out.println("added answer");
+							
+							if(questionCounter == Server.getQuestions().size())
+								isFinished = true;
 						}
 
 						else
 							out.println("answer not added: You must respond in order");
 
+					// comando desconocido
 					} else
 						out.println("Unknown command.");
 					break;
@@ -105,4 +112,54 @@ public class Service extends Thread {
 		}
 
 	}
+
+	/**
+	 * Método que muestra las respuestas seleccionadas por los clientes a cada
+	 * pregunta.
+	 * 
+	 * @param out
+	 *            : flujo donde se imprimirán los resultados
+	 */
+	private static void statistics(PrintWriter out) {
+		for (int i = 0; i < Server.getQuestions().size(); i++) {
+			int first = 0;
+			int second = 0;
+			int third = 0;
+			int forth = 0;
+			
+			out.println("Question " + i +": " + Server.getQuestions().get(i)[0]);
+			out.println("==========");
+			for (Client client : Server.getClients()) {
+				
+				// contador de respuestas
+				if (client != null){
+					int answer = client.getAnswers().get(i);
+					switch (answer) {
+					case 1:
+						first++;
+						break;
+					case 2:
+						second++;
+						break;
+					case 3:
+						third++;
+						break;
+					case 4:
+						forth++;
+						break;
+
+					default:
+						break;
+					}
+				}
+					
+			}
+			out.println();
+			out.println(Server.getQuestions().get(i)[1] + "-->" + first);
+			out.println(Server.getQuestions().get(i)[2] + "-->" + second);
+			out.println(Server.getQuestions().get(i)[3] + "-->" + third);
+			out.println(Server.getQuestions().get(i)[4] + "-->" + forth);
+		}
+	}
+
 }
