@@ -70,6 +70,10 @@ public class Service extends Thread {
 				case "STATISTICS": // muestra las respuestas de los clientes
 					statistics(out);
 					break;
+					
+				case "NQUESTIONS": // muestra el número de preguntas
+					out.println(Server.getQuestions().size());
+					break;
 
 				default:
 					// respuesta a la pregunta
